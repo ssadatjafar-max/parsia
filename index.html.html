@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0d1117">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Parsia Restaurant</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg:       #0d1117;
+  --bg2:      #161b22;
+  --bg3:      #1c2330;
+  --card:     #1c2330;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.13);
+  --text:     #e6edf3;
+  --text2:    #8b949e;
+  --text3:    #484f58;
+  --accent:   #2f81f7;
+  --accent2:  #1f6feb;
+  --green:    #3fb950;
+  --green2:   #238636;
+  --gold:     #d29922;
+  --gold2:    #e3b341;
+  --red:      #f85149;
+  --orange:   #f0883e;
+  --r:        12px;
+  --r-sm:     8px;
+  --r-xs:     6px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  overscroll-behavior: none;
+}
+
+/* ══ SCREENS ══════════════════════════════════════════════════ */
+.screen { display:none; height:100vh; flex-direction:column; overflow:hidden; }
+.screen.active { display:flex; }
+
+/* ══ LOGIN SCREEN ═════════════════════════════════════════════ */
+#screen-login {
+  background: var(--bg);
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.login-logo {
+  font-size: 52px;
+  margin-bottom: 8px;
+  animation: pop .4s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes pop { from{transform:scale(.5);opacity:0} to{transform:scale(1);opacity:1} }
+.login-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+  letter-spacing: -.3px;
+}
+.login-sub {
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 36px;
+}
+.login-card {
+  width: 100%;
+  max-width: 340px;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  padding: 24px;
+}
+.login-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  color: var(--text);
+}
+.user-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.user-btn:hover { border-color: var(--border2); background: #222d3d; }
+.user-btn:active { transform: scale(.98); }
+.user-avatar {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700;
+  flex-shrink: 0;
+}
+.ua-admin { background: linear-gradient(135deg,#1f6feb,#2f81f7); color:#fff; }
+.ua-user  { background: linear-gradient(135deg,#238636,#3fb950); color:#fff; }
+.user-info { flex: 1; text-align: left; }
+.user-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.user-role { font-size: 11px; color: var(--text2); margin-top: 1px; }
+.user-arrow { color: var(--text3); font-size: 16px; }
+
+/* PIN modal */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.7);
+  z-index: 500;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-sheet {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--r) var(--r) 0 0;
+  padding: 20px 24px 36px;
+  width: 100%;
+  max-width: 420px;
+  animation: slideUp .25s ease;
+}
+@keyframes slideUp { from{transform:translateY(40px);opacity:0} to{transform:none;opacity:1} }
+.modal-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.modal-sub { font-size: 12px; color: var(--text2); margin-bottom: 20px; }
+.pin-dots {
+  display: flex; gap: 10px; justify-content: center;
+  margin-bottom: 20px;
+}
+.pin-dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--border2);
+  transition: all .15s;
+}
+.pin-dot.filled { background: var(--accent); border-color: var(--accent); }
+.numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.np-btn {
+  padding: 16px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  text-align: center;
+  transition: all .1s;
+  font-family: 'DM Mono', monospace;
+}
+.np-btn:active { transform: scale(.93); background: #2d3748; }
+.np-btn.del { font-size: 16px; color: var(--text2); }
+.np-btn.ok  { background: var(--accent2); color: #fff; border-color: var(--accent); }
+.pin-error { color: var(--red); font-size: 12px; text-align: center; margin-top: 10px; min-height: 18px; }
+
+/* ══ MAIN APP SCREEN ══════════════════════════════════════════ */
+#screen-app { background: var(--bg); }
+
+.topbar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.topbar-left { display: flex; align-items: center; gap: 10px; }
+.topbar-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+.topbar-name { font-size: 15px; font-weight: 600; }
+.topbar-role { font-size: 10px; color: var(--text2); }
+.topbar-right { display: flex; gap: 8px; }
+.icon-btn {
+  width: 34px; height: 34px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xs);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px;
+  transition: background .15s;
+}
+.icon-btn:active { background: #2d3748; }
+
+/* tabs */
+.tabs {
+  display: flex;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.tab-btn.active { color: var(--text); border-color: var(--accent); }
+
+/* content */
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  padding-bottom: 24px;
+}
+
+/* ══ FORMS ════════════════════════════════════════════════════ */
+.section-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 6px;
+}
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fg-full { grid-column: 1 / -1; }
+.fg { display: flex; flex-direction: column; gap: 4px; }
+.fg label { font-size: 11px; color: var(--text2); font-weight: 500; }
+.fg input, .fg select {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xs);
+  padding: 10px 12px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  width: 100%;
+  transition: border-color .15s;
+}
+.fg input:focus, .fg select:focus { outline: none; border-color: var(--accent); }
+.fg select option { background: var(--bg3); }
+
+.total-box {
+  background: var(--bg);
+  border: 1px solid rgba(240,136,62,.25);
+  border-radius: var(--r-xs);
+  padding: 10px 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--orange);
+  font-family: 'DM Mono', monospace;
+}
+
+.btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: var(--r-xs);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: opacity .15s, transform .1s;
+  margin-top: 12px;
+  letter-spacing: .01em;
+}
+.btn:active { transform: scale(.98); opacity: .9; }
+.btn-primary { background: var(--accent2); color: #fff; }
+.btn-green   { background: var(--green2); color: #fff; }
+.btn-gold    { background: rgba(210,153,34,.15); color: var(--gold2); border: 1px solid rgba(210,153,34,.3); }
+.btn-red     { background: rgba(248,81,73,.1); color: var(--red); border: 1px solid rgba(248,81,73,.2); }
+
+/* ══ RECORDS ══════════════════════════════════════════════════ */
+.records-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.rec-title { font-size: 13px; font-weight: 600; color: var(--text2); }
+.badge {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 11px;
+  color: var(--text2);
+  font-family: 'DM Mono', monospace;
+}
+
+.record-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 10px;
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+.rec-main { flex: 1; min-width: 0; }
+.rec-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rec-meta { font-size: 11px; color: var(--text2); margin-top: 3px; }
+.rec-right { text-align: right; flex-shrink: 0; }
+.rec-total { font-size: 15px; font-weight: 700; font-family: 'DM Mono', monospace; }
+.rec-unit  { font-size: 10px; color: var(--text3); margin-top: 2px; font-family: 'DM Mono', monospace; }
+.del-btn {
+  width: 28px; height: 28px;
+  background: rgba(248,81,73,.08);
+  border: none; border-radius: var(--r-xs);
+  color: var(--red); font-size: 13px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background .15s;
+}
+.del-btn:active { background: rgba(248,81,73,.2); }
+
+.empty {
+  text-align: center; padding: 40px 20px;
+  color: var(--text3); font-size: 13px;
+}
+.empty-icon { font-size: 36px; margin-bottom: 10px; opacity: .5; }
+
+/* ══ STATS ════════════════════════════════════════════════════ */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 14px;
+}
+.stat-label { font-size: 10px; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+.stat-val { font-size: 18px; font-weight: 700; font-family: 'DM Mono', monospace; }
+.stat-val.blue   { color: var(--accent); }
+.stat-val.green  { color: var(--green); }
+.stat-val.gold   { color: var(--gold2); }
+.stat-val.orange { color: var(--orange); }
+
+/* monthly table */
+.month-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.month-table th {
+  text-align: left; padding: 8px 10px;
+  font-size: 10px; font-weight: 600;
+  color: var(--text3); text-transform: uppercase; letter-spacing: .05em;
+  border-bottom: 1px solid var(--border);
+}
+.month-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); }
+.month-table tr:last-child td { border-bottom: none; }
+.month-table tr:hover td { background: rgba(255,255,255,.02); }
+.mono { font-family: 'DM Mono', monospace; }
+
+/* ══ ADMIN PANEL ══════════════════════════════════════════════ */
+.user-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.user-row:last-child { border-bottom: none; }
+.ur-info { flex: 1; }
+.ur-name { font-size: 14px; font-weight: 600; }
+.ur-role { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.ur-actions { display: flex; gap: 6px; }
+.sm-btn {
+  padding: 5px 10px;
+  border-radius: var(--r-xs);
+  font-size: 11px; font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .15s;
+}
+.sm-btn.danger { color: var(--red); border-color: rgba(248,81,73,.3); background: rgba(248,81,73,.07); }
+.sm-btn:active { opacity: .8; }
+
+/* add user form */
+.add-user-form {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 14px;
+  margin-top: 12px;
+}
+
+/* ══ TOAST ════════════════════════════════════════════════════ */
+.toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-size: 13px;
+  opacity: 0;
+  transition: all .2s;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 999;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ══ LOGOUT confirm ═══════════════════════════════════════════ */
+.confirm-btns { display: flex; gap: 10px; margin-top: 16px; }
+.confirm-btns .btn { margin-top: 0; }
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+input[type=number] { -moz-appearance: textfield; }
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN SCREEN ════════════════════════════════════════════ -->
+<div class="screen active" id="screen-login">
+  <div class="login-logo">🍽️</div>
+  <div class="login-title">Parsia Restaurant</div>
+  <div class="login-sub">Einkaufsdatenbank · Offline</div>
+
+  <div class="login-card">
+    <h3>Benutzer auswählen</h3>
+    <div id="user-list-login"></div>
+  </div>
+</div>
+
+<!-- ══ PIN MODAL ═══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="pin-modal">
+  <div class="modal-sheet">
+    <div class="modal-title" id="pin-title">PIN eingeben</div>
+    <div class="modal-sub" id="pin-sub">4-stelliger PIN</div>
+    <div class="pin-dots" id="pin-dots">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="numpad">
+      <div class="np-btn" onclick="pinKey('1')">1</div>
+      <div class="np-btn" onclick="pinKey('2')">2</div>
+      <div class="np-btn" onclick="pinKey('3')">3</div>
+      <div class="np-btn" onclick="pinKey('4')">4</div>
+      <div class="np-btn" onclick="pinKey('5')">5</div>
+      <div class="np-btn" onclick="pinKey('6')">6</div>
+      <div class="np-btn" onclick="pinKey('7')">7</div>
+      <div class="np-btn" onclick="pinKey('8')">8</div>
+      <div class="np-btn" onclick="pinKey('9')">9</div>
+      <div class="np-btn del" onclick="pinCancel()">✕</div>
+      <div class="np-btn" onclick="pinKey('0')">0</div>
+      <div class="np-btn del" onclick="pinDel()">⌫</div>
+    </div>
+    <div class="pin-error" id="pin-error"></div>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ════════════════════════════════════════════════ -->
+<div class="screen" id="screen-app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-avatar" id="app-avatar"></div>
+      <div>
+        <div class="topbar-name" id="app-username"></div>
+        <div class="topbar-role" id="app-role"></div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="icon-btn" onclick="logout()" title="Abmelden">🚪</div>
+    </div>
+  </div>
+
+  <div class="tabs" id="app-tabs"></div>
+
+  <div class="app-content" id="app-content"></div>
+</div>
+
+<!-- ══ TOAST ═══════════════════════════════════════════════════ -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// DATA LAYER
+// ══════════════════════════════════════════════════════════════
+const MONTHS = ["Januar","Februar","März","April","Mai","Juni",
+                "Juli","August","September","Oktober","November","Dezember"];
+
+let db = {
+  users: [
+    { id: 'talai',  name: 'Talai',  role: 'admin', pin: '1234' },
+    { id: 'abdoli', name: 'Abdoli', role: 'user',  pin: '0000' }
+  ],
+  records: []
+};
+
+let currentUser = null;
+let currentTab  = 'einkauf';
+let pinTarget   = null;
+let pinBuffer   = '';
+
+function loadDB() {
+  try {
+    const s = localStorage.getItem('restaurant_db_v2');
+    if (s) db = JSON.parse(s);
+  } catch(e) {}
+}
+function saveDB() {
+  localStorage.setItem('restaurant_db_v2', JSON.stringify(db));
+}
+
+// ══════════════════════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════════════════════
+function renderLoginList() {
+  const el = document.getElementById('user-list-login');
+  el.innerHTML = db.users.map(u => `
+    <div class="user-btn" onclick="startLogin('${u.id}')">
+      <div class="user-avatar ${u.role === 'admin' ? 'ua-admin' : 'ua-user'}">
+        ${u.name.charAt(0).toUpperCase()}
+      </div>
+      <div class="user-info">
+        <div class="user-name">${u.name}</div>
+        <div class="user-role">${u.role === 'admin' ? '👑 Administrator' : '👤 Benutzer'}</div>
+      </div>
+      <div class="user-arrow">›</div>
+    </div>
+  `).join('');
+}
+
+function startLogin(userId) {
+  pinTarget = userId;
+  pinBuffer = '';
+  updatePinDots();
+  document.getElementById('pin-error').textContent = '';
+  const u = db.users.find(x => x.id === userId);
+  document.getElementById('pin-title').textContent = `Willkommen, ${u.name}`;
+  document.getElementById('pin-sub').textContent = '4-stelligen PIN eingeben';
+  document.getElementById('pin-modal').classList.add('open');
+}
+
+function pinKey(k) {
+  if (pinBuffer.length >= 4) return;
+  pinBuffer += k;
+  updatePinDots();
+  if (pinBuffer.length === 4) setTimeout(checkPin, 150);
+}
+function pinDel() {
+  pinBuffer = pinBuffer.slice(0, -1);
+  updatePinDots();
+  document.getElementById('pin-error').textContent = '';
+}
+function pinCancel() {
+  pinBuffer = '';
+  document.getElementById('pin-modal').classList.remove('open');
+}
+function updatePinDots() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('pd' + i).classList.toggle('filled', i < pinBuffer.length);
+  }
+}
+function checkPin() {
+  const u = db.users.find(x => x.id === pinTarget);
+  if (pinBuffer === u.pin) {
+    document.getElementById('pin-modal').classList.remove('open');
+    loginUser(u);
+  } else {
+    document.getElementById('pin-error').textContent = '❌ Falscher PIN – bitte erneut versuchen';
+    pinBuffer = '';
+    updatePinDots();
+  }
+}
+
+function loginUser(u) {
+  currentUser = u;
+  // topbar
+  const av = document.getElementById('app-avatar');
+  av.textContent = u.name.charAt(0).toUpperCase();
+  av.style.background = u.role === 'admin'
+    ? 'linear-gradient(135deg,#1f6feb,#2f81f7)'
+    : 'linear-gradient(135deg,#238636,#3fb950)';
+  av.style.color = '#fff';
+  document.getElementById('app-username').textContent = u.name;
+  document.getElementById('app-role').textContent = u.role === 'admin' ? '👑 Administrator' : '👤 Benutzer';
+
+  buildTabs();
+  showScreen('screen-app');
+  showTab('einkauf');
+}
+
+function logout() {
+  currentUser = null;
+  showScreen('screen-login');
+}
+
+// ══════════════════════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════════════════════
+function buildTabs() {
+  const tabs = [
+    { id: 'einkauf', label: '🛒 Einkauf' },
+    { id: 'liste',   label: '📋 Übersicht' },
+    { id: 'bericht', label: '📊 Bericht' },
+  ];
+  if (currentUser.role === 'admin') {
+    tabs.push({ id: 'admin', label: '⚙️ Admin' });
+  }
+  document.getElementById('app-tabs').innerHTML = tabs.map(t =>
+    `<div class="tab-btn${t.id === currentTab ? ' active' : ''}" onclick="showTab('${t.id}')">${t.label}</div>`
+  ).join('');
+}
+
+function showTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.includes(
+      tab === 'einkauf' ? 'Einkauf' : tab === 'liste' ? 'Übersicht' : tab === 'bericht' ? 'Bericht' : 'Admin'
+    ));
+  });
+  const content = document.getElementById('app-content');
+  content.scrollTop = 0;
+  if (tab === 'einkauf') renderEinkauf();
+  else if (tab === 'liste')   renderListe();
+  else if (tab === 'bericht') renderBericht();
+  else if (tab === 'admin')   renderAdmin();
+}
+
+// ══════════════════════════════════════════════════════════════
+// TAB: EINKAUF
+// ══════════════════════════════════════════════════════════════
+function renderEinkauf() {
+  document.getElementById('app-content').innerHTML = `
+    <div class="section-card">
+      <div class="section-title">➕ Neuen Einkauf erfassen</div>
+      <div class="form-grid">
+        <div class="fg">
+          <label>Datum</label>
+          <input type="date" id="f-date" value="${today()}">
+        </div>
+        <div class="fg">
+          <label>Käufer</label>
+          <select id="f-buyer">${db.users.map(u =>
+            `<option value="${u.id}" ${u.id === currentUser.id ? 'selected' : ''}>${u.name}</option>`
+          ).join('')}</select>
+        </div>
+        <div class="fg fg-full">
+          <label>Artikelname</label>
+          <input type="text" id="f-item" placeholder="z.B. Olivenöl">
+        </div>
+        <div class="fg">
+          <label>Menge</label>
+          <input type="number" id="f-qty" placeholder="0" step="0.01" oninput="updateTotal()">
+        </div>
+        <div class="fg">
+          <label>Preis (€)</label>
+          <input type="number" id="f-price" placeholder="0.00" step="0.01" oninput="updateTotal()">
+        </div>
+        <div class="fg fg-full">
+          <label>Gesamtkosten (automatisch)</label>
+          <div class="total-box" id="f-total">0,00 €</div>
+        </div>
+        <div class="fg fg-full">
+          <label>Geschäft / Lieferant</label>
+          <input type="text" id="f-shop" placeholder="z.B. REWE, Metro">
+        </div>
+        <div class="fg fg-full">
+          <label>Notizen</label>
+          <input type="text" id="f-note" placeholder="Optional">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="saveRecord()">✓ Einkauf speichern</button>
+    </div>
+  `;
+}
+
+function updateTotal() {
+  const qty   = parseFloat(document.getElementById('f-qty')?.value)   || 0;
+  const price = parseFloat(document.getElementById('f-price')?.value) || 0;
+  const t = document.getElementById('f-total');
+  if (t) t.textContent = fmtEur(qty * price);
+}
+
+function saveRecord() {
+  const item  = document.getElementById('f-item').value.trim();
+  const qty   = parseFloat(document.getElementById('f-qty').value);
+  const price = parseFloat(document.getElementById('f-price').value);
+  const date  = document.getElementById('f-date').value || today();
+  const buyer = document.getElementById('f-buyer').value;
+  const shop  = document.getElementById('f-shop').value.trim();
+  const note  = document.getElementById('f-note').value.trim();
+
+  if (!item)         { toast('⚠️ Bitte Artikelname eingeben'); return; }
+  if (!qty || qty <= 0)   { toast('⚠️ Bitte Menge eingeben'); return; }
+  if (!price || price <= 0){ toast('⚠️ Bitte Preis eingeben'); return; }
+
+  db.records.unshift({ id: Date.now(), date, buyerId: buyer, item, qty, price, total: +(qty*price).toFixed(2), shop, note });
+  saveDB();
+  renderEinkauf();
+  toast('✅ Einkauf gespeichert');
+}
+
+// ══════════════════════════════════════════════════════════════
+// TAB: LISTE
+// ══════════════════════════════════════════════════════════════
+function renderListe() {
+  // filter: admin sees all, user sees own
+  const records = currentUser.role === 'admin'
+    ? db.records
+    : db.records.filter(r => r.buyerId === currentUser.id);
+
+  const total = records.reduce((s,r) => s+r.total, 0);
+  const userTotals = db.users.map(u => ({
+    u,
+    t: db.records.filter(r => r.buyerId === u.id).reduce((s,r) => s+r.total, 0)
+  }));
+
+  let statsHtml = '';
+  if (currentUser.role === 'admin') {
+    statsHtml = `<div class="stats-grid">` +
+      userTotals.map((x,i) => `
+        <div class="stat-card">
+          <div class="stat-label">${x.u.name}</div>
+          <div class="stat-val ${i===0?'blue':'green'}">${fmtEur(x.t)}</div>
+        </div>
+      `).join('') +
+      `<div class="stat-card">
+        <div class="stat-label">Gesamt</div>
+        <div class="stat-val gold">${fmtEur(userTotals.reduce((s,x)=>s+x.t,0))}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Einträge</div>
+        <div class="stat-val orange">${db.records.length}</div>
+      </div>
+      </div>`;
+  } else {
+    statsHtml = `<div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Meine Ausgaben</div><div class="stat-val blue">${fmtEur(total)}</div></div>
+      <div class="stat-card"><div class="stat-label">Einkäufe</div><div class="stat-val orange">${records.length}</div></div>
+    </div>`;
+  }
+
+  const listHtml = records.length === 0
+    ? `<div class="empty"><div class="empty-icon">🛍️</div>Noch keine Einträge</div>`
+    : records.map(r => {
+        const uName = db.users.find(u => u.id === r.buyerId)?.name || r.buyerId;
+        const isAdmin = currentUser.role === 'admin';
+        return `
+          <div class="record-item">
+            <div class="rec-main">
+              <div class="rec-name">${r.item}</div>
+              <div class="rec-meta">${r.date}${r.shop?' · '+r.shop:''}${isAdmin?' · '+uName:''}${r.note?' · '+r.note:''}</div>
+            </div>
+            <div class="rec-right">
+              <div class="rec-total" style="color:var(--orange)">${fmtEur(r.total)}</div>
+              <div class="rec-unit">${r.qty} × ${r.price.toFixed(2)} €</div>
+            </div>
+            ${currentUser.role==='admin' || r.buyerId===currentUser.id
+              ? `<button class="del-btn" onclick="deleteRecord(${r.id})">✕</button>`
+              : ''}
+          </div>`;
+      }).join('');
+
+  document.getElementById('app-content').innerHTML = `
+    ${statsHtml}
+    <div class="records-header">
+      <div class="rec-title">Alle Einkäufe</div>
+      <div class="badge">${records.length}</div>
+    </div>
+    <div id="rec-list">${listHtml}</div>
+    <button class="btn btn-gold" onclick="exportCSV()" style="margin-top:16px">📥 CSV exportieren (Excel)</button>
+  `;
+}
+
+function deleteRecord(id) {
+  db.records = db.records.filter(r => r.id !== id);
+  saveDB();
+  renderListe();
+  toast('🗑️ Eintrag gelöscht');
+}
+
+// ══════════════════════════════════════════════════════════════
+// TAB: BERICHT
+// ══════════════════════════════════════════════════════════════
+function renderBericht() {
+  const records = currentUser.role === 'admin'
+    ? db.records
+    : db.records.filter(r => r.buyerId === currentUser.id);
+
+  const monthRows = MONTHS.map((m, mi) => {
+    const recs = records.filter(r => new Date(r.date).getMonth() === mi);
+    if (recs.length === 0) return null;
+    const byUser = {};
+    db.users.forEach(u => {
+      byUser[u.id] = recs.filter(r => r.buyerId === u.id).reduce((s,r)=>s+r.total, 0);
+    });
+    const tot = recs.reduce((s,r)=>s+r.total, 0);
+    return { m, mi, recs, byUser, tot };
+  }).filter(Boolean);
+
+  const grandTotal = records.reduce((s,r) => s+r.total, 0);
+
+  const isAdmin = currentUser.role === 'admin';
+
+  const tableHeader = isAdmin
+    ? `<tr>
+        <th>Monat</th>
+        ${db.users.map(u=>`<th>${u.name}</th>`).join('')}
+        <th>Gesamt</th>
+        <th>Anz.</th>
+       </tr>`
+    : `<tr><th>Monat</th><th>Ausgaben</th><th>Einkäufe</th></tr>`;
+
+  const tableRows = monthRows.length === 0
+    ? `<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:24px">Keine Daten vorhanden</td></tr>`
+    : monthRows.map(row => isAdmin
+        ? `<tr>
+            <td style="font-weight:600">${row.m}</td>
+            ${db.users.map(u=>`<td class="mono" style="color:var(--accent)">${fmtEur(row.byUser[u.id]||0)}</td>`).join('')}
+            <td class="mono" style="color:var(--gold2);font-weight:600">${fmtEur(row.tot)}</td>
+            <td style="color:var(--text2)">${row.recs.length}</td>
+           </tr>`
+        : `<tr>
+            <td style="font-weight:600">${row.m}</td>
+            <td class="mono" style="color:var(--accent)">${fmtEur(row.tot)}</td>
+            <td style="color:var(--text2)">${row.recs.length}</td>
+           </tr>`
+      ).join('');
+
+  document.getElementById('app-content').innerHTML = `
+    <div class="stats-grid" style="margin-bottom:14px">
+      <div class="stat-card">
+        <div class="stat-label">Jahresgesamt</div>
+        <div class="stat-val gold">${fmtEur(grandTotal)}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Monate aktiv</div>
+        <div class="stat-val orange">${monthRows.length}</div>
+      </div>
+    </div>
+    <div class="section-card" style="padding:0;overflow:hidden">
+      <table class="month-table">
+        <thead>${tableHeader}</thead>
+        <tbody>${tableRows}</tbody>
+      </table>
+    </div>
+    <button class="btn btn-gold" onclick="exportCSV()">📥 CSV exportieren (Excel)</button>
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════
+// TAB: ADMIN
+// ══════════════════════════════════════════════════════════════
+function renderAdmin() {
+  const userRows = db.users.map(u => `
+    <div class="user-row">
+      <div class="user-avatar ${u.role==='admin'?'ua-admin':'ua-user'}" style="width:36px;height:36px;font-size:13px">
+        ${u.name.charAt(0)}
+      </div>
+      <div class="ur-info">
+        <div class="ur-name">${u.name}</div>
+        <div class="ur-role">${u.role==='admin'?'👑 Administrator':'👤 Benutzer'} · PIN: ${u.pin}</div>
+      </div>
+      <div class="ur-actions">
+        ${u.id !== currentUser.id
+          ? `<button class="sm-btn danger" onclick="removeUser('${u.id}')">Löschen</button>`
+          : `<span style="font-size:11px;color:var(--text3)">Ich</span>`}
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('app-content').innerHTML = `
+    <div class="section-card">
+      <div class="section-title">👥 Benutzer verwalten</div>
+      <div id="user-rows">${userRows}</div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title">➕ Neuen Benutzer hinzufügen</div>
+      <div class="form-grid">
+        <div class="fg fg-full">
+          <label>Name</label>
+          <input type="text" id="new-name" placeholder="z.B. Klaus">
+        </div>
+        <div class="fg">
+          <label>PIN (4-stellig)</label>
+          <input type="number" id="new-pin" placeholder="0000" maxlength="4">
+        </div>
+        <div class="fg">
+          <label>Rolle</label>
+          <select id="new-role">
+            <option value="user">Benutzer</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-green" onclick="addUser()">➕ Benutzer hinzufügen</button>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title">⚠️ Daten</div>
+      <button class="btn btn-gold" onclick="exportCSV()">📥 Alle Daten exportieren (CSV)</button>
+      <button class="btn btn-red" onclick="confirmReset()" style="margin-top:8px">🗑️ Alle Einkaufsdaten löschen</button>
+    </div>
+  `;
+}
+
+function addUser() {
+  const name = document.getElementById('new-name').value.trim();
+  const pin  = document.getElementById('new-pin').value.trim();
+  const role = document.getElementById('new-role').value;
+
+  if (!name)               { toast('⚠️ Name eingeben'); return; }
+  if (!/^\d{4}$/.test(pin)){ toast('⚠️ PIN muss 4 Ziffern haben'); return; }
+  if (db.users.find(u => u.name.toLowerCase() === name.toLowerCase())) {
+    toast('⚠️ Benutzer existiert bereits'); return;
+  }
+
+  const id = name.toLowerCase().replace(/\s+/g,'_') + '_' + Date.now();
+  db.users.push({ id, name, role, pin });
+  saveDB();
+  buildTabs();
+  renderAdmin();
+  toast(`✅ ${name} wurde hinzugefügt`);
+}
+
+function removeUser(uid) {
+  const u = db.users.find(x => x.id === uid);
+  if (!u) return;
+  db.users = db.users.filter(x => x.id !== uid);
+  db.records = db.records.filter(r => r.buyerId !== uid);
+  saveDB();
+  renderLoginList();
+  renderAdmin();
+  toast(`🗑️ ${u.name} wurde entfernt`);
+}
+
+function confirmReset() {
+  const content = document.getElementById('app-content');
+  content.insertAdjacentHTML('afterbegin', `
+    <div class="section-card" style="border-color:rgba(248,81,73,.3);background:rgba(248,81,73,.05)">
+      <div style="font-size:14px;font-weight:600;color:var(--red);margin-bottom:8px">⚠️ Alle Einkaufsdaten löschen?</div>
+      <div style="font-size:12px;color:var(--text2)">Diese Aktion kann nicht rückgängig gemacht werden.</div>
+      <div class="confirm-btns">
+        <button class="btn btn-red" onclick="resetData()" style="flex:1">Ja, löschen</button>
+        <button class="btn" style="flex:1;background:var(--bg3);color:var(--text2);border:1px solid var(--border)" onclick="renderAdmin()">Abbrechen</button>
+      </div>
+    </div>
+  `);
+}
+
+function resetData() {
+  db.records = [];
+  saveDB();
+  renderAdmin();
+  toast('🗑️ Alle Daten gelöscht');
+}
+
+// ══════════════════════════════════════════════════════════════
+// EXPORT CSV
+// ══════════════════════════════════════════════════════════════
+function exportCSV() {
+  const BOM = '\uFEFF';
+  let csv = BOM + 'Datum,Käufer,Artikelname,Menge,Preis (€),Gesamtkosten (€),Geschäft / Lieferant,Notizen\n';
+  db.records.forEach(r => {
+    const uName = db.users.find(u => u.id === r.buyerId)?.name || r.buyerId;
+    csv += [r.date, uName, r.item, r.qty, r.price, r.total, r.shop||'', r.note||'']
+      .map(v => `"${String(v).replace(/"/g,'""')}"`)
+      .join(',') + '\n';
+  });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'}));
+  a.download = 'restaurant_einkauf_' + today() + '.csv';
+  a.click();
+  toast('📥 CSV-Datei exportiert');
+}
+
+// ══════════════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function today() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function fmtEur(n) {
+  return Number(n).toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+loadDB();
+renderLoginList();
+</script>
+</body>
+</html>
